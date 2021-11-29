@@ -33,8 +33,13 @@ const SuperLeague = mongoose.model('SuperLeague', {
 app.get("/superleague",(req,res)=>{
   SuperLeague
   .find({})
+  .sort({points: -1})
   .then(teams=>{
-    res.json(teams);
+    res.json({
+      success : true,
+      message : "Team fetched succesfully",
+      data: teams
+    });
   })
 })
 app.get("/superleague/:teamId",(req,res)=>{
@@ -42,9 +47,35 @@ app.get("/superleague/:teamId",(req,res)=>{
   SuperLeague
   .findById(req.params.teamId)
   .then(team=>{
-    res.json(team);
+    res.json({
+      success: true,
+      message: team.name+"fetched sucess",
+      data: team
+    });
   })
-})
+});
+app.put("/superleague/:teamId",(req,res)=>{
+  // res.json({team: req.params.teamId});
+  SuperLeague
+  .updateOne({_id: req.params.teamId},
+    req.body
+    )
+  .then(team=>{
+    res.json({success: true, message: "update ok"});
+  })
+});
+app.delete("/superleague/:teamId",(req,res)=>{
+  // res.json({team: req.params.teamId});
+  SuperLeague
+  .deleteOne({_id: req.params.teamId})
+  .then(result => {
+    if (result.deletedCount === 1){
+      res.json({
+        success: true, message:"Deleted succesfully"
+      })
+    }
+  })
+});
 app.get('/data', (req, res) => {
   res.json({
     name: "zartas zartanian"
